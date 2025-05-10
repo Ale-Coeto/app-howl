@@ -12,11 +12,9 @@ struct RecordingSheetView: View {
         VStack {
             TitleView(text: "Nueva Llamada")
             
-            SubtitleView(text: "Grabar")
+//            SubtitleView(text: "Grabar")
             Text("Graba una nueva llamada con el micrófono de tu teléfono")
             
-            SubtitleView(text: "Subir archivo")
-            Text("Sube un archivo de audio o video para analizar la llamada")
         }
     }
 }

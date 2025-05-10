@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CallView: View {
-    @ObservedObject var viewModel = MainVM()
+    @ObservedObject var vm = MainVM()
     
     var body: some View {
         ZStack {
@@ -19,34 +19,21 @@ struct CallView: View {
             VStack {
                 VStack {
                     HStack {
-                        LargeTitle(text: "Análisis de", highlightedText: "Llamadas")
+                        VStack (alignment: .leading) {
+                            LargeTitle(text: "Análisis de", highlightedText: "Llamadas")
+                            Text("Mejorando el servicio al cliente")
+                        }
                         Spacer()
                     }
                     .padding(.horizontal)
                    
-                    VStack (alignment: .leading) {
-                        HStack {
-                            Text("Subir llamada")
-                                .foregroundStyle(.white)
-                            Spacer()
-                        }
-                        
-                        Button {
-                            viewModel.showRecordingSheet = true
-                        } label : {
-                            Text("Nueva llamada")
-                                .foregroundStyle(.white)
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 20)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 30).stroke(.white, lineWidth: 2)
-                                }
-                        }
+                    HStack (spacing: 20) {
+                        CallButtonView(info: vm.callButton, action: vm.openRecording)
+                        CallButtonView(info: vm.uploadButton, action: vm.openUpload)
                     }
-                    .padding(30)
-                    .background(Color("Primary"))
-                    .cornerRadius(10)
+                    .padding(.vertical, 20)
                     .padding()
+                    
                 }
                 .padding()
                 
@@ -59,7 +46,10 @@ struct CallView: View {
                 }
             }
         }
-        .sheet(isPresented: $viewModel.showRecordingSheet) {
+        .sheet(isPresented: $vm.showRecordingSheet) {
+            RecordingSheetView()
+        }
+        .sheet(isPresented: $vm.showUploadSheet) {
             RecordingSheetView()
         }
     }

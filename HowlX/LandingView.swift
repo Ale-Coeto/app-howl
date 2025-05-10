@@ -10,42 +10,63 @@ import SwiftUI
 struct LandingView: View {
     var body: some View {
         NavigationStack {
-            VStack {
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundStyle(Color("Primary"))
-                Text("HowlX")
-                
+            ZStack {
                 VStack {
-                    NavigationLink {
-                        LoginView()
-                    } label: {
-                        Text("Login")
-                            .frame(width: 150)
-                            .foregroundStyle(.white)
-                            .padding(.vertical, 8)
-//                            .padding(.horizontal, 50)
-                            .background(Color("Primary"))
-                            .clipShape(RoundedRectangle(cornerRadius: 30))
-                    }
-                    
-                    NavigationLink {
-                        SignUpView()
-                    } label: {
-                        Text("Registro")
-                            .frame(width: 150)
-                            .foregroundStyle(Color("Primary"))
-                            .padding(.vertical, 8)
-//                            .padding(.horizontal, 50)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 30).stroke(Color("Primary"), lineWidth: 2)
-                            }
-                    }
-                    
+                    Rectangle()
+                        .fill(.BG)
+                        .frame(width: 700, height: 600)
+                        .rotationEffect(.degrees(12))
+                        .offset(y: -110)
+                    Spacer()
                 }
-                
+
+                VStack {
+                    Spacer()
+
+                    VStack {
+                        Text("HowlX")
+                            .font(.title)
+                            .fontWeight(.medium)
+                            .padding(.bottom, 20)
+
+                        Image("Logo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 80)
+                    }
+                    .padding(.bottom, 200)
+
+                    Spacer()
+                }
+
+                VStack {
+
+                    Spacer()
+                    
+                    // TODO: make button width not fixed
+                    VStack (spacing: 20) {
+                        
+                        LargeTitle(text: "Análisis de ", highlightedText: "Llamadas")
+                            .padding(.bottom, 35)
+                    
+                        NavigationLink {
+                            LoginView()
+                        } label: {
+                                ButtonLabelView(label: "Login", width: 300)
+                        }
+
+                        NavigationLink {
+                            SignUpView()
+                        } label: {
+                            ButtonLabelView(label: "Registro", primary: false, width: 300)
+                        }
+
+                    }
+
+
+                }
+                .padding()
             }
-            .padding()
         }
     }
 }
