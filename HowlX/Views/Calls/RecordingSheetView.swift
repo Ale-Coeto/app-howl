@@ -8,12 +8,41 @@
 import SwiftUI
 
 struct RecordingSheetView: View {
+    @Environment(\.dismiss) var quitView
+    @ObservedObject var vm = RecordingSheetVM()
+    
     var body: some View {
         VStack {
-            TitleView(text: "Nueva Llamada")
+            CircleIconView(icon: "microphone.fill")
+                .padding(.bottom, 30)
+            TitleView(text: "Grabar llamada")
+            Text("Sube un archivo de audio o video para analizar la llamada.")
+                .padding(.horizontal, 30)
+                .padding(.bottom, 40)
             
-//            SubtitleView(text: "Grabar")
-            Text("Graba una nueva llamada con el micrófono de tu teléfono")
+            if vm.hasRecording {
+                //Preview
+                
+                HStack {
+                    Button {
+                        vm.handleCancel()
+                    } label: {
+                        ButtonLabelView(label: "Cancelar", primary: false, width: 140)
+                    }
+                    Button {
+                        quitView()
+                    } label: {
+                        ButtonLabelView(label: "Subir archivo", width: 140)
+                    }
+                }
+                
+            } else {
+                Button {
+//                    vm.showFileSelector = true
+                } label: {
+                    ButtonLabelView(label: "Seleccionar Archivo", width: 200)
+                }
+            }
             
         }
     }

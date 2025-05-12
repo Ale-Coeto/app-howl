@@ -13,7 +13,7 @@ struct TitleView: View {
         Text(text)
             .font(.title2)
             .fontWeight(.medium)
-            .padding(.bottom, 20)
+            .padding(.bottom, 10)
     }
 }
 

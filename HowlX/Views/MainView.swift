@@ -16,7 +16,6 @@ struct MainView: View {
                     Label("Análisis", systemImage: "microphone.fill")
                 }
             
-            
             LogsView()
                 .tabItem {
                     Label("Pendientes", systemImage: "list.bullet")

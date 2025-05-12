@@ -25,16 +25,16 @@ struct LoginView: View {
                             .textFieldStyle(.roundedBorder)
                             .textContentType(.emailAddress)
                             .textCase(.lowercase)
-                            .disableAutocorrection(true)
+                            .autocorrectionDisabled(true)
                     }
                 }
                 
                 VStack (alignment: .leading) {
                     Text("Contraseña")
-                    TextField("", text: $viewModel.password)
+                    SecureField("", text: $viewModel.password)
                         .textFieldStyle(.roundedBorder)
                         .textContentType(.password)
-                        .disableAutocorrection(true)
+                        .autocorrectionDisabled(true)
                 }
                 .padding(.bottom, 20)
                 

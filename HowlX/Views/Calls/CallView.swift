@@ -28,7 +28,7 @@ struct CallView: View {
                     .padding(.horizontal)
                    
                     HStack (spacing: 20) {
-                        CallButtonView(info: vm.callButton, action: vm.openRecording)
+                        CallButtonView(info: vm.recordButton, action: vm.openRecording)
                         CallButtonView(info: vm.uploadButton, action: vm.openUpload)
                     }
                     .padding(.vertical, 20)
@@ -50,7 +50,7 @@ struct CallView: View {
             RecordingSheetView()
         }
         .sheet(isPresented: $vm.showUploadSheet) {
-            RecordingSheetView()
+            UploadSheetView()
         }
     }
 }

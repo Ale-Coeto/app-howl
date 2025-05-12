@@ -18,7 +18,7 @@ struct CallButtonView: View {
             ZStack(alignment: .center) {
 
                 Circle()
-                    .fill(Color("Primary").opacity(0.4))
+                    .fill(Color("Primary").opacity(0.2))
                     .frame(width: 50)
                     .overlay {
                         Image(systemName: info.icon)

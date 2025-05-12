@@ -19,9 +19,9 @@ class MainVM: ObservableObject {
     @Published var showUploadSheet = false
     
     
-    var uploadButton = CallButton(title: "Nueva Llamada", buttonLabel: "Grabar", icon: "microphone.fill")
+    var recordButton = CallButton(title: "Nueva Llamada", buttonLabel: "Grabar", icon: "microphone.fill")
     
-    var callButton = CallButton(title: "Subir archivo", buttonLabel: "Subir", icon: "square.and.arrow.up")
+    var uploadButton = CallButton(title: "Subir archivo", buttonLabel: "Subir", icon: "square.and.arrow.up")
     
     func openRecording() {
         showRecordingSheet = true
