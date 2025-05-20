@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ReportView: View {
-    var sample = Call().sampleCall
+//    var sample = Call().sampleCall
     
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
