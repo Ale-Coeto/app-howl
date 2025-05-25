@@ -8,18 +8,12 @@
 import SwiftUI
 
 struct LatestCallsView: View {
-    var logs = [
-        Log(id: 1, name: "Test", client: "Softek", date: Date()),
-        Log(id: 2, name: "Test", client: "Softek", date: Date()),
-        Log(id: 3, name: "Test", client: "Softek", date: Date()),
-        Log(id: 4, name: "Test", client: "Softek", date: Date()),
-        Log(id: 5, name: "Test", client: "Softek", date: Date()),
-    ]
+    @ObservedObject var vm = LatestCallsVM()
     
     var body: some View {
         ScrollView {
-            ForEach(logs) { log in
-                LogView(name: log.name, client: log.client, date: log.date)
+            ForEach(vm.calls) { call in
+                LogView(name: call.name, client: call.client.firstname, date: call.date)
             }
         }
         .padding(.horizontal)

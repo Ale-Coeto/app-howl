@@ -7,51 +7,49 @@
 
 import Foundation
 
-class Call: Identifiable {
-    var id: Int
-    var summary: String
-    var satisfaction: Int
-    var duration: Int
-    var date: Date
-    var mainIdeas: [String]
-    var type: String
-    var consultant_id: Int
-    var feedback: String?
-    var sentimentAnalysis: String
-    
-    init(id: Int, summary: String, satisfaction: Int, duration: Int, date: Date, mainIdeas: [String], type: String, consultant_id: Int, feedback: String? = nil, sentimentAnalysis: String) {
-        self.id = id
-        self.summary = summary
-        self.satisfaction = satisfaction
-        self.duration = duration
-        self.date = date
-        self.mainIdeas = mainIdeas
-        self.type = type
-        self.consultant_id = consultant_id
-        self.feedback = feedback
-        self.sentimentAnalysis = sentimentAnalysis
-    }
-    
-    var sampleCall = Call(id: 1, summary: "Call about performance test done poorly", satisfaction: 8, duration: 10, date: Date(), mainIdeas: ["Performance", "poorly done"], type: "Testing", consultant_id: 1, sentimentAnalysis: "Happy")
-}
-    
-    
-//    id                 Int             @id(map: "call_pkey") @default(autoincrement())
-//      context            String?
-//      satisfaction       Int?
-//      duration           Int
-//      summary            String?
-//      date               DateTime        @db.Date
-//      transcript         String?
-//      main_ideas         String[]
-//      type               String?         @db.VarChar(50)
-//      consultant_id      Int?
-//      client_id          Int?
-//      feedback           String?
-//      sentiment_analysis String?
-//      risk_words         String?
-//      output             String?
-//      call_emotions      call_emotions[]
-//      client             client?         @relation(fields: [client_id], references: [id], onUpdate: NoAction, map: "call_client_id_fkey")
-//      consultant         consultant?
+struct Call: Codable, Identifiable {
+    let id: Int
+    let context: String?
+    let satisfaction: Int
+    let duration: Int
+    let summary: String
+    let date: Date
+    let transcript: String?
+    let mainIdeas: [String]
+    let type: String
+    let consultantID: Int
+    let clientID: Int
+    let feedback: String
+    let sentimentAnalysis: String
+    let riskWords: [String]
+    let output: String
+    let diarizedTranscript: [DiarizedTranscript]
+    let name: String
+    let client: Client
 
+    enum CodingKeys: String, CodingKey {
+        case id, context, satisfaction, duration, summary, date, transcript
+        case mainIdeas = "main_ideas"
+        case type
+        case consultantID = "consultant_id"
+        case clientID = "client_id"
+        case feedback, sentimentAnalysis = "sentiment_analysis"
+        case riskWords = "risk_words"
+        case output
+        case diarizedTranscript = "diarized_transcript"
+        case name, client
+    }
+}
+
+struct DiarizedTranscript: Codable {
+    let speaker: String
+    let text: String
+}
+
+struct Client: Codable {
+    let id: Int
+    let firstname: String
+    let lastname: String
+}
+
+    

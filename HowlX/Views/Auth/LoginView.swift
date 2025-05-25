@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct LoginView: View {
-    @ObservedObject var viewModel = LoginVM()
+    @ObservedObject var vm = LoginVM()
+    @ObservedObject var authManager: AuthManager
     
     var body: some View {
         ZStack {
@@ -18,10 +19,16 @@ struct LoginView: View {
             VStack {
                 TitleView(text: "Login")
                 
+                if (vm.error != "") {
+                    Text(vm.error)
+                        .foregroundStyle(.red)
+                        .padding(.bottom)
+                }
+                
                 VStack {
                     VStack (alignment: .leading) {
                         Text("Correo")
-                        TextField("", text: $viewModel.email)
+                        TextField("", text: $vm.email)
                             .textFieldStyle(.roundedBorder)
                             .textContentType(.emailAddress)
                             .textCase(.lowercase)
@@ -31,7 +38,7 @@ struct LoginView: View {
                 
                 VStack (alignment: .leading) {
                     Text("Contraseña")
-                    SecureField("", text: $viewModel.password)
+                    SecureField("", text: $vm.password)
                         .textFieldStyle(.roundedBorder)
                         .textContentType(.password)
                         .autocorrectionDisabled(true)
@@ -39,7 +46,17 @@ struct LoginView: View {
                 .padding(.bottom, 20)
                 
                 Button {
-                    
+                    vm.login() { result in
+                        switch result {
+                        case .success(let token):
+                            print("Got token")
+                            authManager.handleLoginSuccess(token: token)
+                           
+                        case .failure(let error):
+                            print("Login failed:", error.localizedDescription)
+                            vm.error = error.localizedDescription
+                        }
+                    }
                 } label: {
                     Text("Login")
                         .foregroundStyle(.white)
@@ -54,7 +71,7 @@ struct LoginView: View {
                         .foregroundStyle(Color("TextLight"))
                     
                     NavigationLink {
-                        SignUpView()
+                        SignUpView(authManager: authManager)
                     } label: {
                         Text("Regístrate")
                             .foregroundStyle(Color("PrimaryLight"))
@@ -75,5 +92,5 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView()
+    LoginView(authManager: AuthManager())
 }

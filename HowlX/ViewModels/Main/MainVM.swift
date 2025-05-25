@@ -11,7 +11,6 @@ struct CallButton {
     var title: String
     var buttonLabel: String
     var icon: String
-
 }
 
 class MainVM: ObservableObject {

@@ -109,7 +109,6 @@ class RecordingSheetVM: NSObject, ObservableObject {
             }
         }
         
-        // Clean up when deinitialized
         deinit {
             stopPlayback()
         }

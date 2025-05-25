@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SignUpView: View {
     @ObservedObject var viewModel = SignUpVM()
+    @ObservedObject var authManager: AuthManager
     
     var body: some View {
         ZStack {
@@ -71,7 +72,7 @@ struct SignUpView: View {
                         .font(.system(size: 15))
                     
                     NavigationLink {
-                        LoginView()
+//                        LoginView()
                     } label: {
                         Text("Inicia sesión")
                             .foregroundStyle(Color("PrimaryLight"))
@@ -93,5 +94,5 @@ struct SignUpView: View {
 }
 
 #Preview {
-    SignUpView()
+    SignUpView(authManager: AuthManager())
 }
