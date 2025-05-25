@@ -9,25 +9,71 @@ import AVFoundation
 import Foundation
 
 class RecordingSheetVM: NSObject, ObservableObject {
-    @Published var hasRecording = false
+    @Published var hasRecording = true
     @Published var audioRecorder: AVAudioRecorder?
     @Published var isRecording = false
+    @Published var selectedClient: Client? = nil
 
     @Published var audioPlayer: AVAudioPlayer?
     @Published var isPlaying = false
     @Published var playbackProgress: Double = 0
     private var playbackTimer: Timer?
-
-    func handleCancel() {
-        hasRecording = false
-    }
-
+    @Published var clients: [Client] = []
+    
     private var audioFileURL: URL {
         let documentPath = FileManager.default.urls(
             for: .documentDirectory, in: .userDomainMask)[0]
         return documentPath.appendingPathComponent("recording.m4a")
     }
 
+    override init() {
+        super.init()
+        guard let token = loadTokenFromKeychain() else {
+            print("No token available")
+            return
+        }
+        
+        fetchClients(token: token) { result in
+            switch result {
+            case .success(let clients):
+                print("Fetched \(clients.count) clients")
+                DispatchQueue.main.async {
+                    self.clients = clients
+//                    self.selectedClient = clients.first!
+                }
+                // Update your state or UI here
+            case .failure(let error):
+                print("Error fetching calls: \(error)")
+            }
+        }
+        
+    }
+    
+    func uploadRecording() {
+        
+    }
+    
+    func getDisplayName(_ client: Client?) -> String {
+        guard let client = client else {
+            return ""
+        }
+        
+        return client.firstname + " " + client.lastname
+    }
+    
+    func getCompanyName(_ client: Client?) -> String {
+        guard let client = client else {
+            return ""
+        }
+        
+        return client.company.name
+    }
+
+    func handleCancel() {
+        hasRecording = false
+    }
+
+   
     func startRecording() {
         // First request permission
         AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in

@@ -8,7 +8,7 @@
 import Foundation
 
 func fetchCalls(token: String, completion: @escaping (Result<[Call], Error>) -> Void) {
-    guard let url = URL(string: "http://localhost:3000/api/app/calls") else {
+    guard let url = URL(string: BACKEND_URL + "/api/app/calls/getCalls") else {
         print("Invalid URL")
         return
     }

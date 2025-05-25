@@ -24,10 +24,9 @@ class LoginVM: ObservableObject {
     func login(completion: @escaping (Result<String, Error>) -> Void) {
         if (email == "" || password == "") {
             error = "Email o contraseña vacíos"
-//            return
         }
         
-        guard let url = URL(string: "http://localhost:3000/api/auth/login") else {
+        guard let url = URL(string: BACKEND_URL + "/api/auth/login") else {
                 completion(.failure(NSError(domain: "Invalid URL", code: 0)))
                 return
             }

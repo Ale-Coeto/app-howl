@@ -50,7 +50,9 @@ struct LoginView: View {
                         switch result {
                         case .success(let token):
                             print("Got token")
-                            authManager.handleLoginSuccess(token: token)
+                            DispatchQueue.main.async {
+                                authManager.handleLoginSuccess(token: token)
+                            }
                            
                         case .failure(let error):
                             print("Login failed:", error.localizedDescription)

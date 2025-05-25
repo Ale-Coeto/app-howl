@@ -11,13 +11,11 @@ import AVFoundation
 struct RecordingSheetView: View {
     @Environment(\.dismiss) var quitView
     @ObservedObject var vm = RecordingSheetVM()
-    @State private var pulse = false
     
     var body: some View {
         VStack {
             
-            
-            
+            // Recording done
             if vm.hasRecording {
                 
                 TitleView(text: "Vista Previa")
@@ -26,17 +24,35 @@ struct RecordingSheetView: View {
                     .padding(.horizontal, 30)
                     .padding(.bottom, 40)
                 
-                //Preview
+                HStack () {
+                    Text("Grabación")
+                        .fontWeight(.medium)
+                        .foregroundStyle(.text)
+                    Spacer()
+                }
+                .padding(.horizontal, 40)
+                
                 Button(action: vm.togglePlayback) {
                     CircleIconView(icon: vm.isPlaying ? "stop.fill" : "play.fill")
                 }
                 
-                // Optional: Add a progress bar
                 ProgressView(value: vm.playbackProgress, total: 1.0)
                     .accentColor(Color("Primary"))
                     .padding()
                     .padding(.bottom)
                     .padding(.horizontal, 30)
+                
+                VStack (alignment: .leading) {
+                    Text("Cliente")
+                        .fontWeight(.medium)
+                        .foregroundStyle(.text)
+                    
+                    ClientPickerView(vm: vm)
+                        .padding(.bottom)
+                }
+                .padding(.horizontal, 40)
+                .padding(.bottom, 40)
+                .padding(.top, 20)
                 
                 HStack {
                     Button {
@@ -45,6 +61,7 @@ struct RecordingSheetView: View {
                         ButtonLabelView(label: "Cancelar", primary: false, width: 140)
                     }
                     Button {
+                        vm.uploadRecording()
                         quitView()
                     } label: {
                         ButtonLabelView(label: "Subir grabación", width: 140)
@@ -53,6 +70,7 @@ struct RecordingSheetView: View {
                 
             } else {
                 
+                // Stop recording
                 if vm.isRecording {
                     CircleIconView(icon: "record.circle")
                         .padding(.bottom, 30)
@@ -68,6 +86,8 @@ struct RecordingSheetView: View {
                     } label: {
                         ButtonLabelView(label: "Parar", width: 200)
                     }
+                    
+                // Start recording
                 } else {
                     
                     CircleIconView(icon: "microphone.fill")

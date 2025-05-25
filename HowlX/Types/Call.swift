@@ -7,6 +7,8 @@
 
 import Foundation
 
+
+
 struct Call: Codable, Identifiable {
     let id: Int
     let context: String?
@@ -25,7 +27,7 @@ struct Call: Codable, Identifiable {
     let output: String
     let diarizedTranscript: [DiarizedTranscript]
     let name: String
-    let client: Client
+    let client: ClientCall
 
     enum CodingKeys: String, CodingKey {
         case id, context, satisfaction, duration, summary, date, transcript
@@ -46,7 +48,7 @@ struct DiarizedTranscript: Codable {
     let text: String
 }
 
-struct Client: Codable {
+struct ClientCall: Codable {
     let id: Int
     let firstname: String
     let lastname: String
