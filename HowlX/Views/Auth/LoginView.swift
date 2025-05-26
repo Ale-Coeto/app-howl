@@ -56,7 +56,9 @@ struct LoginView: View {
                            
                         case .failure(let error):
                             print("Login failed:", error.localizedDescription)
-                            vm.error = error.localizedDescription
+                            DispatchQueue.main.async {
+                                vm.error = error.localizedDescription
+                            }
                         }
                     }
                 } label: {

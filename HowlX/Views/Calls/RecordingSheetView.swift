@@ -11,6 +11,8 @@ import AVFoundation
 struct RecordingSheetView: View {
     @Environment(\.dismiss) var quitView
     @ObservedObject var vm = RecordingSheetVM()
+    @Binding var selectedCall: Call?
+    @Binding var openReport: Bool
     
     var body: some View {
         VStack {
@@ -61,7 +63,7 @@ struct RecordingSheetView: View {
                         ButtonLabelView(label: "Cancelar", primary: false, width: 140)
                     }
                     Button {
-                        vm.uploadRecording()
+                        uploadRecording()
                         quitView()
                     } label: {
                         ButtonLabelView(label: "Subir grabación", width: 140)
@@ -117,9 +119,64 @@ struct RecordingSheetView: View {
         }
     }
     
+    func uploadRecording() {
+
+        let fileURL = vm.audioFileURL
+
+        guard let clientId = vm.selectedClient?.id else {
+            print("No id")
+            return
+        }
+
+        uploadCallRecording(fileURL: fileURL, clientId: clientId) { result in
+            switch result {
+            case .success(let response):
+                DispatchQueue.main.async {
+                    do {
+                        guard let responseData = response.data(using: .utf8)
+                        else {
+                            print("Failed to convert response string to Data")
+                            return
+                        }
+
+                        let decoder = JSONDecoder()
+                        let callData = try decoder.decode(
+                            Call.self, from: responseData)
+                        
+                        selectedCall = callData
+                        openReport = true
+                        print("Upload successful, ID: \(callData.id)")
+                    } catch {
+                        print(
+                            "Failed to decode response: \(error.localizedDescription)"
+                        )
+                    }
+                }
+
+                print("Upload successful: \(response)")
+            case .failure(let error):
+                print("Upload failed: \(error.localizedDescription)")
+            }
+        }
+
+    }
+    
     
 }
 
 #Preview {
-    RecordingSheetView()
+    struct PreviewWrapper: View {
+        @State private var call:Call? = sampleCall
+        @State private var open = false
+
+            var body: some View {
+                ZStack {
+                    Color("BG").ignoresSafeArea()
+                    RecordingSheetView(selectedCall: $call, openReport: $open)
+                }
+            }
+        }
+
+        return PreviewWrapper()
+    
 }

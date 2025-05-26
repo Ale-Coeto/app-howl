@@ -11,6 +11,7 @@ struct LogView: View {
     var name: String = ""
     var client: String = ""
     var date: Date = Date()
+    var companyName: String = ""
     
     var body: some View {
         
@@ -28,7 +29,7 @@ struct LogView: View {
                 Text(date.formatted(date: .abbreviated, time: .omitted))
                     .foregroundStyle(Color("Primary"))
                 
-                Text(date.formatted(date: .omitted, time: .shortened))
+                Text(companyName)
                     .foregroundStyle(Color("PrimaryLight"))
             }
         }
@@ -45,6 +46,6 @@ struct LogView: View {
     ZStack {
         Color(.gray)
         
-        LogView(name: "Servicios", client: "Axteen", date: Date())
+        LogView(name: "Servicios", client: "Axteen", date: Date(), companyName: "Softek")
     }
 }

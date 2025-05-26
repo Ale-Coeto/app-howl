@@ -9,11 +9,19 @@ import SwiftUI
 
 struct LatestCallsView: View {
     @ObservedObject var vm = LatestCallsVM()
+    @Binding var selectedCall: Call?
+    @Binding var openReport: Bool
     
     var body: some View {
         ScrollView {
             ForEach(vm.calls) { call in
-                LogView(name: call.name, client: call.client.firstname, date: call.date)
+                Button {
+                    selectedCall = call
+                    openReport = true
+                } label: {
+                    LogView(name: call.name, client: call.client.firstname + call.client.lastname, date: call.date, companyName: call.client.company?.name ?? "")
+                }
+                
             }
         }
         .padding(.horizontal)
@@ -22,8 +30,16 @@ struct LatestCallsView: View {
 }
 
 #Preview {
-    ZStack {
-        Color("BG")
-        LatestCallsView()
-    }
+    struct PreviewWrapper: View {
+        @State private var mockCall: Call? = sampleCall
+        @State private var mockOpen = true
+            var body: some View {
+                ZStack {
+                    Color("BG").ignoresSafeArea()
+                    LatestCallsView(selectedCall: $mockCall, openReport: $mockOpen)
+                }
+            }
+        }
+
+        return PreviewWrapper()
 }

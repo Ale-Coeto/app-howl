@@ -16,7 +16,8 @@ struct CallButton {
 class MainVM: ObservableObject {
     @Published var showRecordingSheet = false
     @Published var showUploadSheet = false
-    
+    @Published var showReportSheet = false
+    @Published var selectedCall: Call?
     
     var recordButton = CallButton(title: "Nueva Llamada", buttonLabel: "Grabar", icon: "microphone.fill")
     

@@ -36,8 +36,10 @@ class LoginVM: ObservableObject {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
             let body: [String: String] = [
-                "email": "admin@tec.mx",
-                "password": "123456#A"
+                "email": email,
+                "password": password
+//                "email": "admin@tec.mx",
+//                "password": "123456#A"
             ]
 
             request.httpBody = try? JSONEncoder().encode(body)

@@ -42,15 +42,20 @@ struct CallView: View {
                         .padding(.horizontal, 30)
                         .fontWeight(.semibold)
                 
-                    LatestCallsView()
+                    LatestCallsView(selectedCall: $vm.selectedCall, openReport: $vm.showReportSheet)
                 }
             }
         }
         .sheet(isPresented: $vm.showRecordingSheet) {
-            RecordingSheetView()
+            RecordingSheetView(selectedCall: $vm.selectedCall, openReport: $vm.showReportSheet)
         }
         .sheet(isPresented: $vm.showUploadSheet) {
             UploadSheetView()
+        }
+        .sheet(isPresented: $vm.showReportSheet) {
+            if let call = vm.selectedCall {
+                CallReportView(call: call)
+            }
         }
     }
 }
