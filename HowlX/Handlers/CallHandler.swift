@@ -65,98 +65,154 @@ func fetchCalls(
     }.resume()
 }
 
-func uploadCallRecording(
-    fileURL: URL,
-    clientId: Int,
-    completion: @escaping (Result<String, Error>) -> Void
-) {
-    guard let url = URL(string: BACKEND_URL + "/api/app/calls/analyzeCall") else {
-        print("Invalid URL")
-        return
-    }
-    
+func uploadCallRecording(fileURL: URL, clientId: Int, completion: @escaping (Result<String, Error>) -> Void) {
     guard let token = loadTokenFromKeychain() else {
-        print("Invalid Token")
+        completion(.failure(NSError(domain: "No token", code: 401)))
         return
     }
-
-    var request = URLRequest(url: url)
-    request.httpMethod = "POST"
-    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
     let boundary = UUID().uuidString
-    request.setValue(
-        "multipart/form-data; boundary=\(boundary)",
-        forHTTPHeaderField: "Content-Type")
+    var request = URLRequest(url: URL(string: BACKEND_URL + "/api/app/calls/upload")!)
+    request.httpMethod = "POST"
+    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
-    var data = Data()
+    var body = Data()
 
+    // Add file
+    let filename = fileURL.lastPathComponent
+    let mimeType = "audio/mpeg" // Change depending on your file type
+    let fileData = try! Data(contentsOf: fileURL)
+
+    body.append("--\(boundary)\r\n".data(using: .utf8)!)
+    body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+    body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+    body.append(fileData)
+    body.append("\r\n".data(using: .utf8)!)
 
     // Add clientId
-    data.append("--\(boundary)\r\n".data(using: .utf8)!)
-    data.append(
-        "Content-Disposition: form-data; name=\"clientId\"\r\n\r\n".data(
-            using: .utf8)!)
-    data.append("\(clientId)\r\n".data(using: .utf8)!)
+    body.append("--\(boundary)\r\n".data(using: .utf8)!)
+    body.append("Content-Disposition: form-data; name=\"client_id\"\r\n\r\n".data(using: .utf8)!)
+    body.append("\(clientId)\r\n".data(using: .utf8)!)
 
-    // Add audio file
-    let filename = "recording.m4a"
-    let mimetype = "audio/m4a"
+    body.append("--\(boundary)--\r\n".data(using: .utf8)!)
 
-    do {
-        let fileData = try Data(contentsOf: fileURL)
-
-        data.append("--\(boundary)\r\n".data(using: .utf8)!)
-        data.append(
-            "Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n"
-                .data(using: .utf8)!)
-        data.append("Content-Type: \(mimetype)\r\n\r\n".data(using: .utf8)!)
-        data.append(fileData)
-        data.append("\r\n".data(using: .utf8)!)
-        data.append("--\(boundary)--\r\n".data(using: .utf8)!)
-    } catch {
-        DispatchQueue.main.async {
-            print("filedata error")
-            completion(.failure(error))
-        }
-        return
-    }
-
-    request.httpBody = data
+    request.httpBody = body
 
     URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
-            DispatchQueue.main.async {
-                completion(.failure(error))
-            }
+            completion(.failure(error))
             return
         }
 
-        guard let httpResponse = response as? HTTPURLResponse else {
-            DispatchQueue.main.async {
-                completion(
-                    .failure(NSError(domain: "Invalid response", code: -1)))
-            }
+        guard let data = data else {
+            completion(.failure(NSError(domain: "No data", code: -1)))
             return
         }
 
-        if httpResponse.statusCode == 200, let data = data {
-            let responseString =
-                String(data: data, encoding: .utf8) ?? "No response string"
-            DispatchQueue.main.async {
-                completion(.success(responseString))
-            }
+        if let string = String(data: data, encoding: .utf8) {
+            completion(.success(string))
         } else {
-            let statusError = NSError(
-                domain: "Upload failed",
-                code: httpResponse.statusCode,
-                userInfo: [
-                    NSLocalizedDescriptionKey: "Unexpected server response"
-                ]
-            )
-            DispatchQueue.main.async {
-                completion(.failure(statusError))
-            }
+            completion(.failure(NSError(domain: "Invalid response", code: -1)))
         }
     }.resume()
 }
+
+
+//
+//func uploadCallRecording(
+//    fileURL: URL,
+//    clientId: Int,
+//    completion: @escaping (Result<String, Error>) -> Void
+//) {
+//    guard let url = URL(string: BACKEND_URL + "/api/app/calls/analyzeCall") else {
+//        print("Invalid URL")
+//        return
+//    }
+//    
+//    guard let token = loadTokenFromKeychain() else {
+//        print("Invalid Token")
+//        return
+//    }
+//
+//    var request = URLRequest(url: url)
+//    request.httpMethod = "POST"
+//    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+//
+//    let boundary = UUID().uuidString
+//    request.setValue(
+//        "multipart/form-data; boundary=\(boundary)",
+//        forHTTPHeaderField: "Content-Type")
+//
+//    var data = Data()
+//
+//
+//    // Add clientId
+//    data.append("--\(boundary)\r\n".data(using: .utf8)!)
+//    data.append(
+//        "Content-Disposition: form-data; name=\"clientId\"\r\n\r\n".data(
+//            using: .utf8)!)
+//    data.append("\(clientId)\r\n".data(using: .utf8)!)
+//
+//    // Add audio file
+//    let filename = "recording.m4a"
+//    let mimetype = "audio/m4a"
+//
+//    do {
+//        let fileData = try Data(contentsOf: fileURL)
+//
+//        data.append("--\(boundary)\r\n".data(using: .utf8)!)
+//        data.append(
+//            "Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n"
+//                .data(using: .utf8)!)
+//        data.append("Content-Type: \(mimetype)\r\n\r\n".data(using: .utf8)!)
+//        data.append(fileData)
+//        data.append("\r\n".data(using: .utf8)!)
+//        data.append("--\(boundary)--\r\n".data(using: .utf8)!)
+//    } catch {
+//        DispatchQueue.main.async {
+//            print("filedata error")
+//            completion(.failure(error))
+//        }
+//        return
+//    }
+//
+//    request.httpBody = data
+//
+//    URLSession.shared.dataTask(with: request) { data, response, error in
+//        if let error = error {
+//            DispatchQueue.main.async {
+//                completion(.failure(error))
+//            }
+//            return
+//        }
+//
+//        guard let httpResponse = response as? HTTPURLResponse else {
+//            DispatchQueue.main.async {
+//                completion(
+//                    .failure(NSError(domain: "Invalid response", code: -1)))
+//            }
+//            return
+//        }
+//
+//        if httpResponse.statusCode == 200, let data = data {
+//            let responseString =
+//                String(data: data, encoding: .utf8) ?? "No response string"
+//            DispatchQueue.main.async {
+////                print("Success: ", responseString)
+//                completion(.success(responseString))
+//            }
+//        } else {
+//            let statusError = NSError(
+//                domain: "Upload failed",
+//                code: httpResponse.statusCode,
+//                userInfo: [
+//                    NSLocalizedDescriptionKey: "Unexpected server response"
+//                ]
+//            )
+//            DispatchQueue.main.async {
+//                completion(.failure(statusError))
+//            }
+//        }
+//    }.resume()
+//}

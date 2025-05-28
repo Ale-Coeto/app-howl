@@ -4,24 +4,38 @@
 //
 //  Created by Alejandra Coeto on 10/05/25.
 //
-
 import SwiftUI
 
 struct UploadSheetView: View {
     @Environment(\.dismiss) var quitView
     @ObservedObject var vm = UploadSheetVM()
+    @Binding var selectedCall: Call?
+    @Binding var openReport: Bool
     
     var body: some View {
         VStack {
             CircleIconView(icon: "square.and.arrow.up")
                 .padding(.bottom, 30)
+            
             TitleView(text: "Subir archivo")
+            
             Text("Sube un archivo de audio o video para analizar la llamada.")
                 .padding(.horizontal, 30)
                 .padding(.bottom, 40)
             
             if vm.fileSelected {
-                //Preview
+                // Preview section
+                VStack(alignment: .leading) {
+                    Text("Cliente")
+                        .fontWeight(.medium)
+                        .foregroundStyle(.text)
+                    
+                    ClientPickerView2(vm: vm)
+                        .padding(.bottom)
+                }
+                .padding(.horizontal, 40)
+                .padding(.bottom, 40)
+                .padding(.top, 20)
                 
                 HStack {
                     Button {
@@ -29,13 +43,13 @@ struct UploadSheetView: View {
                     } label: {
                         ButtonLabelView(label: "Cancelar", primary: false, width: 140)
                     }
+                    
                     Button {
-                        quitView()
+                        uploadFile()
                     } label: {
                         ButtonLabelView(label: "Subir archivo", width: 140)
                     }
                 }
-                
             } else {
                 Button {
                     vm.showFileSelector = true
@@ -43,34 +57,149 @@ struct UploadSheetView: View {
                     ButtonLabelView(label: "Seleccionar Archivo", width: 200)
                 }
             }
-            
         }
         .fileImporter(
             isPresented: $vm.showFileSelector,
-            allowedContentTypes: [.wav, .audio, .mp3]
-//            allowsMultipleSelection: false
-            
+            allowedContentTypes: [.audio, .mp3, .wav, .mpeg4Audio]
         ) { result in
-             switch result {
-             case .success(let file):
-                 // gain access to the directory
-                 let gotAccess = file.startAccessingSecurityScopedResource()
-                 if !gotAccess { return }
-                 
-                 vm.handleFileSelected(file)
-                 // access the directory URL
-                 // (read templates in the directory, make a bookmark, etc.)
-//                      onTemplatesDirectoryPicked(directory)
-                 // release access
-                 file.stopAccessingSecurityScopedResource()
-             case .failure(let error):
-                 // handle error
-                 print(error)
-             }
+            switch result {
+            case .success(let file):
+                let gotAccess = file.startAccessingSecurityScopedResource()
+                if !gotAccess {
+                    print("Failed to get access to the file")
+                    return
+                }
+
+                vm.selectedFileURL = file
+                vm.fileSelected = true
+                file.stopAccessingSecurityScopedResource()
+
+            case .failure(let error):
+                print("File selection error:", error)
+            }
+        }
+
+    }
+    
+    private func uploadFile() {
+        guard let fileURL = vm.selectedFileURL,
+              let clientId = vm.selectedClient?.id else {
+            print("No file or client selected")
+            return
+        }
+        
+        uploadCallRecording(fileURL: fileURL, clientId: clientId) { result in
+            switch result {
+            case .success(let response):
+                DispatchQueue.main.async {
+                    do {
+                        guard let responseData = response.data(using: .utf8) else {
+                            print("Failed to convert response to Data")
+                            return
+                        }
+                        
+                        let decoder = JSONDecoder()
+                        decoder.dateDecodingStrategy = .iso8601
+                        
+                        let callData = try decoder.decode(Call.self, from: responseData)
+                        selectedCall = callData
+                        openReport = true
+                        quitView()
+                        
+                        print("Upload successful, ID: \(callData.id)")
+                    } catch {
+                        print("Failed to decode response:", error)
+//                        if let jsonString = String(data: responseData, encoding: .utf8) {
+//                            print("Raw response:", jsonString)
+//                        }
+                    }
+                }
+                
+            case .failure(let error):
+                print("Upload failed:", error.localizedDescription)
+            }
         }
     }
 }
 
 #Preview {
-    UploadSheetView()
+    struct PreviewWrapper: View {
+        @State private var call: Call? = nil
+        @State private var open = false
+        
+        var body: some View {
+            UploadSheetView(selectedCall: $call, openReport: $open)
+        }
+    }
+    return PreviewWrapper()
 }
+//
+//import SwiftUI
+//
+//struct UploadSheetView: View {
+//    @Environment(\.dismiss) var quitView
+//    @ObservedObject var vm = UploadSheetVM()
+//    
+//    var body: some View {
+//        VStack {
+//            CircleIconView(icon: "square.and.arrow.up")
+//                .padding(.bottom, 30)
+//            TitleView(text: "Subir archivo")
+//            Text("Sube un archivo de audio o video para analizar la llamada.")
+//                .padding(.horizontal, 30)
+//                .padding(.bottom, 40)
+//            
+//            if vm.fileSelected {
+//                //Preview
+//                
+//                HStack {
+//                    Button {
+//                        vm.handleCancel()
+//                    } label: {
+//                        ButtonLabelView(label: "Cancelar", primary: false, width: 140)
+//                    }
+//                    Button {
+//                        quitView()
+//                    } label: {
+//                        ButtonLabelView(label: "Subir archivo", width: 140)
+//                    }
+//                }
+//                
+//            } else {
+//                Button {
+//                    vm.showFileSelector = true
+//                } label: {
+//                    ButtonLabelView(label: "Seleccionar Archivo", width: 200)
+//                }
+//            }
+//            
+//        }
+//        .fileImporter(
+//            isPresented: $vm.showFileSelector,
+//            allowedContentTypes: [.wav, .audio, .mp3]
+////            allowsMultipleSelection: false
+//            
+//        ) { result in
+//             switch result {
+//             case .success(let file):
+//                 // gain access to the directory
+//                 let gotAccess = file.startAccessingSecurityScopedResource()
+//                 if !gotAccess { return }
+//                 
+//                 vm.handleFileSelected(file)
+//                 // access the directory URL
+//                 // (read templates in the directory, make a bookmark, etc.)
+////                      onTemplatesDirectoryPicked(directory)
+//                 // release access
+//                 file.stopAccessingSecurityScopedResource()
+//             case .failure(let error):
+//                 // handle error
+//                 print(error)
+//             }
+//        }
+//    }
+//}
+//
+//#Preview {
+//    UploadSheetView()
+//}

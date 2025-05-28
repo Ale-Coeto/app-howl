@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MainView: View {
+    @ObservedObject var authManager: AuthManager
+    
     var body: some View {
         TabView {
             
@@ -16,12 +18,12 @@ struct MainView: View {
                     Label("Análisis", systemImage: "microphone.fill")
                 }
             
-            LogsView()
-                .tabItem {
-                    Label("Pendientes", systemImage: "list.bullet")
-                }
-            
-            ProfileView()
+//            LogsView()
+//                .tabItem {
+//                    Label("Pendientes", systemImage: "list.bullet")
+//                }
+//            
+            ProfileView(authManager: authManager)
                 .tabItem {
                     Label("Perfil", systemImage: "person.fill")
                 }
@@ -30,5 +32,5 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    MainView(authManager: AuthManager())
 }

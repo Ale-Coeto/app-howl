@@ -16,7 +16,9 @@ struct CallReportView: View {
             
             ScrollView {
                 
-                CallSectionView(title: "Temas clave", icon: "list.bullet", content: call.mainIdeas)
+                if call.mainIdeas.count > 0 {
+                    CallSectionView(title: "Temas clave", icon: "list.bullet", content: call.mainIdeas)
+                }
                 
                 if let feedback = call.feedback {
                     CallSectionView(title: "Retroalimentación", icon: "bubble", content: [feedback])
@@ -26,12 +28,13 @@ struct CallReportView: View {
                     CallSectionView(title: "Sentimiento", icon: "doc.text", content: [emotions])
                 }
                 
-                
                 if let result = call.output {
                     CallSectionView(title: "Resultado", icon: "doc.text", content: [result])
                 }
                 
-                CallSectionView(title: "Palabras de riesgo", icon: "doc.text", content: call.riskWords)
+                if call.riskWords.count > 0 {
+                    CallSectionView(title: "Palabras de riesgo", icon: "doc.text", content: call.riskWords)
+                }
                 
                 if let summary = call.summary {
                     CallSectionView(title: "Resumen", icon: "doc.text", content: [summary])

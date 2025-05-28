@@ -6,8 +6,8 @@
 //
 import SwiftUI
 
-struct ClientPickerView: View {
-    @ObservedObject var vm: RecordingSheetVM
+struct ClientPickerView2: View {
+    @ObservedObject var vm: UploadSheetVM
     @State private var isMenuPresented = false
     @State private var searchText = ""
     
@@ -177,5 +177,5 @@ struct ClientPickerView: View {
 //}
 
 #Preview {
-    ClientPickerView(vm: RecordingSheetVM())
+    ClientPickerView2(vm: UploadSheetVM())
 }

@@ -13,7 +13,7 @@ struct LandingView: View {
     var body: some View {
         Group {
             if authManager.isLoggedIn {
-                MainView()
+                MainView(authManager: authManager)
             } else {
                 AuthView(authManager: authManager)
             }

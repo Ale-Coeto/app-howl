@@ -50,7 +50,7 @@ struct CallView: View {
             RecordingSheetView(selectedCall: $vm.selectedCall, openReport: $vm.showReportSheet)
         }
         .sheet(isPresented: $vm.showUploadSheet) {
-            UploadSheetView()
+            UploadSheetView(selectedCall: $vm.selectedCall, openReport: $vm.showReportSheet)
         }
         .sheet(isPresented: $vm.showReportSheet) {
             if let call = vm.selectedCall {

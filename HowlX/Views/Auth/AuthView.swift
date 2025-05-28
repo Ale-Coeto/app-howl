@@ -59,12 +59,12 @@ struct AuthView: View {
                             ButtonLabelView(label: "Login", width: 300)
                         }
 
-                        NavigationLink {
-                            SignUpView(authManager: authManager)
-                        } label: {
-                            ButtonLabelView(
-                                label: "Registro", primary: false, width: 300)
-                        }
+//                        NavigationLink {
+//                            SignUpView(authManager: authManager)
+//                        } label: {
+//                            ButtonLabelView(
+//                                label: "Registro", primary: false, width: 300)
+//                        }
 
                     }
 

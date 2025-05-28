@@ -27,7 +27,7 @@ struct Call: Codable, Identifiable {
     let output: String?
     let diarizedTranscript: [DiarizedTranscript]?
     let name: String
-    let client: ClientCall
+    let client: ClientCall?
 
     enum CodingKeys: String, CodingKey {
         case id, context, satisfaction, duration, summary, date, transcript

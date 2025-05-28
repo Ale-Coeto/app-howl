@@ -26,7 +26,7 @@ class LoginVM: ObservableObject {
             error = "Email o contraseña vacíos"
         }
         
-        guard let url = URL(string: BACKEND_URL + "/api/auth/login") else {
+        guard let url = URL(string: BACKEND_URL + "/api/app/auth/login") else {
                 completion(.failure(NSError(domain: "Invalid URL", code: 0)))
                 return
             }
@@ -66,5 +66,21 @@ class LoginVM: ObservableObject {
             task.resume()
         
     }
+    
+    
+    
+    private func invalidateTokenOnServer() {
+            guard let url = URL(string: BACKEND_URL + "/api/auth/logout") else { return }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            
+            // Add authorization header if token exists
+            if let token = loadTokenFromKeychain() {
+                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            }
+            
+            URLSession.shared.dataTask(with: request).resume()
+        }
     
 }

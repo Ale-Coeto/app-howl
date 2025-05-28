@@ -12,26 +12,23 @@ class AuthManager: ObservableObject {
     @Published var showLogin = true
 
     init() {
-        checkToken()
-    }
-
-    func checkToken() {
-        if let token = loadTokenFromKeychain() {
-            isLoggedIn = true
-            print(token)
-
-        } else {
-            isLoggedIn = false
+        verifyToken { isValid in
+            DispatchQueue.main.async {
+                self.isLoggedIn = isValid
+            }
         }
     }
+    
 
     func handleLoginSuccess(token: String) {
         saveTokenToKeychain(token: token)
         isLoggedIn = true
     }
 
+
     func logout() {
         deleteTokenFromKeychain()
+//        invalidateTokenOnServer()
         isLoggedIn = false
     }
 }

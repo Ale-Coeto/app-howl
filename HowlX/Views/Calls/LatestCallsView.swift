@@ -19,7 +19,9 @@ struct LatestCallsView: View {
                     selectedCall = call
                     openReport = true
                 } label: {
-                    LogView(name: call.name, client: call.client.firstname + call.client.lastname, date: call.date, companyName: call.client.company?.name ?? "")
+                    if let client = call.client {
+                        LogView(name: call.name, client: client.firstname + client.lastname, date: call.date, companyName: client.company?.name ?? "")
+                    }
                 }
                 
             }

@@ -13,6 +13,7 @@ class RecordingSheetVM: NSObject, ObservableObject {
     @Published var audioRecorder: AVAudioRecorder?
     @Published var isRecording = false
     @Published var selectedClient: Client? = nil
+    @Published var name: String = ""
 
     @Published var audioPlayer: AVAudioPlayer?
     @Published var isPlaying = false
@@ -24,7 +25,11 @@ class RecordingSheetVM: NSObject, ObservableObject {
     var audioFileURL: URL {
         let documentPath = FileManager.default.urls(
             for: .documentDirectory, in: .userDomainMask)[0]
-        return documentPath.appendingPathComponent("recording.m4a")
+        var filename = "recording.m4a"
+        if name != "" {
+            filename = name + ".m4a"
+        }
+        return documentPath.appendingPathComponent(filename)
     }
 
     override init() {

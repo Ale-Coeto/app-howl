@@ -45,6 +45,21 @@ struct RecordingSheetView: View {
                     .padding(.horizontal, 30)
                 
                 VStack (alignment: .leading) {
+                    Text("Nombre")
+                        .fontWeight(.medium)
+                        .foregroundStyle(.text)
+                    
+                    TextField("", text: $vm.name)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.emailAddress)
+                        .textCase(.lowercase)
+                        .autocorrectionDisabled(true)
+                }
+                .padding(.horizontal, 40)
+                .padding(.bottom, 40)
+                .padding(.top, 20)
+                
+                VStack (alignment: .leading) {
                     Text("Cliente")
                         .fontWeight(.medium)
                         .foregroundStyle(.text)
@@ -131,6 +146,7 @@ struct RecordingSheetView: View {
         uploadCallRecording(fileURL: fileURL, clientId: clientId) { result in
             switch result {
             case .success(let response):
+                
                 DispatchQueue.main.async {
                     do {
                         guard let responseData = response.data(using: .utf8)
@@ -138,8 +154,26 @@ struct RecordingSheetView: View {
                             print("Failed to convert response string to Data")
                             return
                         }
+                        print(String(data: responseData, encoding: .utf8) ?? "Invalid data")
 
                         let decoder = JSONDecoder()
+                        let formatter = ISO8601DateFormatter()
+                        formatter.formatOptions = [
+                            .withInternetDateTime, .withFractionalSeconds,
+                        ]
+
+                        decoder.dateDecodingStrategy = .custom { decoder in
+                            let container = try decoder.singleValueContainer()
+                            let dateStr = try container.decode(String.self)
+                            if let date = formatter.date(from: dateStr) {
+                                return date
+                            } else {
+                                throw DecodingError.dataCorruptedError(
+                                    in: container,
+                                    debugDescription: "Invalid date format: \(dateStr)"
+                                )
+                            }
+                        }
                         let callData = try decoder.decode(
                             Call.self, from: responseData)
                         
@@ -148,7 +182,8 @@ struct RecordingSheetView: View {
                         print("Upload successful, ID: \(callData.id)")
                     } catch {
                         print(
-                            "Failed to decode response: \(error.localizedDescription)"
+                            "Failed to decode response: \(error)"
+                            
                         )
                     }
                 }
