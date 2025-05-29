@@ -67,20 +67,17 @@ func fetchUserDetails(completion: @escaping (Result<UserDetails, Error>) -> Void
         }
         return
     }
-
     guard let url = URL(string: BACKEND_URL + "/api/app/auth/getUserDetails") else {
-        DispatchQueue.main.async {
-            completion(.failure(NSError(domain: "API path not valid", code: -1)))
-        }
+//        completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"]))
         return
     }
-
+    
     var request = URLRequest(url: url)
     request.httpMethod = "GET"
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-    let body = ["token": token]
-    request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    
+    // Add token if needed, for example:
+    // request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
     URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
@@ -92,13 +89,14 @@ func fetchUserDetails(completion: @escaping (Result<UserDetails, Error>) -> Void
 
         guard let data = data else {
             DispatchQueue.main.async {
-                completion(.failure(NSError(domain: "No response", code: -1)))
+                completion(.failure(NSError(domain: "No data", code: -1)))
             }
             return
         }
 
+        let decoder = JSONDecoder()
+
         do {
-            let decoder = JSONDecoder()
             let user = try decoder.decode(UserDetails.self, from: data)
             DispatchQueue.main.async {
                 completion(.success(user))

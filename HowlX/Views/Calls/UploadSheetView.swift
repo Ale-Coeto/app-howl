@@ -88,31 +88,34 @@ struct UploadSheetView: View {
             return
         }
         
-        uploadCallRecording(fileURL: fileURL, clientId: clientId) { result in
+        uploadFileCall(fileURL: fileURL, clientId: clientId) { result in
             switch result {
-            case .success(let response):
-                DispatchQueue.main.async {
-                    do {
-                        guard let responseData = response.data(using: .utf8) else {
-                            print("Failed to convert response to Data")
-                            return
-                        }
-                        
-                        let decoder = JSONDecoder()
-                        decoder.dateDecodingStrategy = .iso8601
-                        
-                        let callData = try decoder.decode(Call.self, from: responseData)
+            case .success(let responseString):
+                do {
+                    guard let responseData = responseString.data(using: .utf8) else {
+                        print("Failed to convert response to Data")
+                        return
+                    }
+                    
+                    // Print raw response for debugging
+                    print("Raw response:", responseString)
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    let callData = try decoder.decode(Call.self, from: responseData)
+                    
+                    DispatchQueue.main.async {
                         selectedCall = callData
                         openReport = true
                         quitView()
-                        
                         print("Upload successful, ID: \(callData.id)")
-                    } catch {
-                        print("Failed to decode response:", error)
-//                        if let jsonString = String(data: responseData, encoding: .utf8) {
-//                            print("Raw response:", jsonString)
-//                        }
                     }
+                } catch {
+                    print("Decoding failed:", error)
+//                    if let jsonString = String(data: responseData, encoding: .utf8) {
+//                        print("Raw JSON:", jsonString)
+//                    }
                 }
                 
             case .failure(let error):

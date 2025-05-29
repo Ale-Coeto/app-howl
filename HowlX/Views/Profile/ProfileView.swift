@@ -18,16 +18,19 @@ struct ProfileView: View {
             
             CircleIconView(icon: "person.fill")
             
-            Text(vm.profileData.name)
-                .font(.title2)
-                .foregroundStyle(.text)
-                .padding(.bottom, 60)
-            
-            ProfileSectionView(title: "Email", text: vm.profileData.email)
-            
-            ProfileSectionView(title: "Role", text: vm.profileData.role)
-            
-            ProfileSectionView(title: "Calls", text: "\(vm.profileData.callCount) calls")
+            if let user = vm.profileData {
+                Text(user.name)
+                    .font(.title2)
+                    .foregroundStyle(.text)
+                    .padding(.bottom, 60)
+                
+                ProfileSectionView(title: "Email", text: user.email)
+                
+                ProfileSectionView(title: "Role", text: user.role)
+                
+                ProfileSectionView(title: "Calls", text: "\(user.callCount) calls")
+                
+            }
             
             Button {
                 authManager.logout()

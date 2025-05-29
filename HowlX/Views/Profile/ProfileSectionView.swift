@@ -12,7 +12,7 @@ struct ProfileSectionView: View {
     var text: String = ""
     
     var body: some View {
-        VStack (alignment: .leading) {
+        VStack {
             TitleView(text: title)
             
             Text(text)

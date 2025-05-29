@@ -8,7 +8,7 @@
 import Foundation
 
 class ProfileVM: ObservableObject {
-    var profileData: UserDetails = UserDetails()
+    @Published var profileData: UserDetails?
     
     init() {
         fetchUserDetails() { result in
