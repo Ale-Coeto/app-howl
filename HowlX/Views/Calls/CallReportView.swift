@@ -39,6 +39,10 @@ struct CallReportView: View {
                 if let summary = call.summary {
                     CallSectionView(title: "Resumen", icon: "doc.text", content: [summary])
                 }
+                
+                if let transcript = call.diarizedTranscript {
+                    TranscriptView(title: "Transcript", icon: "bubble.left.and.text.bubble.right", transcript: transcript)
+                }
             }
         
         }

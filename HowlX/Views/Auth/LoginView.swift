@@ -30,8 +30,7 @@ struct LoginView: View {
                         Text("Correo")
                         TextField("", text: $vm.email)
                             .textFieldStyle(.roundedBorder)
-                            .textContentType(.emailAddress)
-                            .textCase(.lowercase)
+                            .keyboardType(.emailAddress)
                             .autocorrectionDisabled(true)
                     }
                 }
@@ -55,7 +54,7 @@ struct LoginView: View {
                             }
                            
                         case .failure(let error):
-                            print("Login failed:", error.localizedDescription)
+                            print("Login failed:", error)
                             DispatchQueue.main.async {
                                 vm.error = error.localizedDescription
                             }

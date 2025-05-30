@@ -11,39 +11,40 @@ struct UploadSheetView: View {
     @ObservedObject var vm = UploadSheetVM()
     @Binding var selectedCall: Call?
     @Binding var openReport: Bool
-    
+
     var body: some View {
         VStack {
             CircleIconView(icon: "square.and.arrow.up")
                 .padding(.bottom, 30)
-            
+
             TitleView(text: "Subir archivo")
-            
+
             Text("Sube un archivo de audio o video para analizar la llamada.")
                 .padding(.horizontal, 30)
                 .padding(.bottom, 40)
-            
+
             if vm.fileSelected {
                 // Preview section
                 VStack(alignment: .leading) {
                     Text("Cliente")
                         .fontWeight(.medium)
                         .foregroundStyle(.text)
-                    
+
                     ClientPickerView2(vm: vm)
                         .padding(.bottom)
                 }
                 .padding(.horizontal, 40)
                 .padding(.bottom, 40)
                 .padding(.top, 20)
-                
+
                 HStack {
                     Button {
                         vm.handleCancel()
                     } label: {
-                        ButtonLabelView(label: "Cancelar", primary: false, width: 140)
+                        ButtonLabelView(
+                            label: "Cancelar", primary: false, width: 140)
                     }
-                    
+
                     Button {
                         uploadFile()
                     } label: {
@@ -80,44 +81,53 @@ struct UploadSheetView: View {
         }
 
     }
-    
+
     private func uploadFile() {
         guard let fileURL = vm.selectedFileURL,
-              let clientId = vm.selectedClient?.id else {
+            let clientId = vm.selectedClient?.id
+        else {
             print("No file or client selected")
             return
         }
-        
+
+        let gotAccess = fileURL.startAccessingSecurityScopedResource()
+        guard gotAccess else {
+            print("Failed to access security scoped file")
+            return
+        }
+
         uploadFileCall(fileURL: fileURL, clientId: clientId) { result in
+            // Stop access AFTER the upload finishes
+            defer {
+                fileURL.stopAccessingSecurityScopedResource()
+            }
+
             switch result {
             case .success(let responseString):
                 do {
-                    guard let responseData = responseString.data(using: .utf8) else {
+                    guard let responseData = responseString.data(using: .utf8)
+                    else {
                         print("Failed to convert response to Data")
                         return
                     }
-                    
+
                     // Print raw response for debugging
                     print("Raw response:", responseString)
-                    
-                    let decoder = JSONDecoder()
-                    decoder.dateDecodingStrategy = .iso8601
-                    
-                    let callData = try decoder.decode(Call.self, from: responseData)
-                    
+
+                    let decoder = CustomDecoder.getInstance()
+
+                    let callData = try decoder.decode(
+                        Call.self, from: responseData)
+
                     DispatchQueue.main.async {
                         selectedCall = callData
                         openReport = true
                         quitView()
-                        print("Upload successful, ID: \(callData.id)")
                     }
                 } catch {
                     print("Decoding failed:", error)
-//                    if let jsonString = String(data: responseData, encoding: .utf8) {
-//                        print("Raw JSON:", jsonString)
-//                    }
                 }
-                
+
             case .failure(let error):
                 print("Upload failed:", error.localizedDescription)
             }
@@ -129,7 +139,7 @@ struct UploadSheetView: View {
     struct PreviewWrapper: View {
         @State private var call: Call? = nil
         @State private var open = false
-        
+
         var body: some View {
             UploadSheetView(selectedCall: $call, openReport: $open)
         }
@@ -142,7 +152,7 @@ struct UploadSheetView: View {
 //struct UploadSheetView: View {
 //    @Environment(\.dismiss) var quitView
 //    @ObservedObject var vm = UploadSheetVM()
-//    
+//
 //    var body: some View {
 //        VStack {
 //            CircleIconView(icon: "square.and.arrow.up")
@@ -151,10 +161,10 @@ struct UploadSheetView: View {
 //            Text("Sube un archivo de audio o video para analizar la llamada.")
 //                .padding(.horizontal, 30)
 //                .padding(.bottom, 40)
-//            
+//
 //            if vm.fileSelected {
 //                //Preview
-//                
+//
 //                HStack {
 //                    Button {
 //                        vm.handleCancel()
@@ -167,7 +177,7 @@ struct UploadSheetView: View {
 //                        ButtonLabelView(label: "Subir archivo", width: 140)
 //                    }
 //                }
-//                
+//
 //            } else {
 //                Button {
 //                    vm.showFileSelector = true
@@ -175,20 +185,20 @@ struct UploadSheetView: View {
 //                    ButtonLabelView(label: "Seleccionar Archivo", width: 200)
 //                }
 //            }
-//            
+//
 //        }
 //        .fileImporter(
 //            isPresented: $vm.showFileSelector,
 //            allowedContentTypes: [.wav, .audio, .mp3]
 ////            allowsMultipleSelection: false
-//            
+//
 //        ) { result in
 //             switch result {
 //             case .success(let file):
 //                 // gain access to the directory
 //                 let gotAccess = file.startAccessingSecurityScopedResource()
 //                 if !gotAccess { return }
-//                 
+//
 //                 vm.handleFileSelected(file)
 //                 // access the directory URL
 //                 // (read templates in the directory, make a bookmark, etc.)

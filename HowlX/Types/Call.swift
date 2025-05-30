@@ -43,7 +43,7 @@ struct Call: Codable, Identifiable {
     }
 }
 
-struct DiarizedTranscript: Codable {
+struct DiarizedTranscript: Codable, Hashable {
     let speaker: String
     let text: String
 }

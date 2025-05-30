@@ -156,24 +156,7 @@ struct RecordingSheetView: View {
                         }
                         print(String(data: responseData, encoding: .utf8) ?? "Invalid data")
 
-                        let decoder = JSONDecoder()
-                        let formatter = ISO8601DateFormatter()
-                        formatter.formatOptions = [
-                            .withInternetDateTime, .withFractionalSeconds,
-                        ]
-
-                        decoder.dateDecodingStrategy = .custom { decoder in
-                            let container = try decoder.singleValueContainer()
-                            let dateStr = try container.decode(String.self)
-                            if let date = formatter.date(from: dateStr) {
-                                return date
-                            } else {
-                                throw DecodingError.dataCorruptedError(
-                                    in: container,
-                                    debugDescription: "Invalid date format: \(dateStr)"
-                                )
-                            }
-                        }
+                        let decoder = CustomDecoder.getInstance()
                         let callData = try decoder.decode(
                             Call.self, from: responseData)
                         

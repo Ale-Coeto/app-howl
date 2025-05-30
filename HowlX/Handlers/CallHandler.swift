@@ -187,22 +187,22 @@ func uploadFileCall(fileURL: URL, clientId: Int, completion: @escaping (Result<S
 
     // Add clientId
     data.append("--\(boundary)\r\n".data(using: .utf8)!)
-    data.append(
-        "Content-Disposition: form-data; name=\"clientId\"\r\n\r\n".data(
-            using: .utf8)!)
+    data.append("Content-Disposition: form-data; name=\"clientId\"\r\n\r\n".data(using: .utf8)!)
     data.append("\(clientId)\r\n".data(using: .utf8)!)
 
     // Add audio file
-    let filename = "recording.m4a"
-    let mimetype = "audio/m4a"
+//    let filename = fileName
+//    let mimetype = mimeTypeForFileExtension(fileURL.pathExtension)
+    
+    let filename = fileURL.lastPathComponent
+    let mimetype = mimeTypeForFileExtension(fileURL.pathExtension)
 
     do {
         let fileData = try Data(contentsOf: fileURL)
+        print("Uploading file: \(filename), Size: \(fileData.count) bytes")
 
         data.append("--\(boundary)\r\n".data(using: .utf8)!)
-        data.append(
-            "Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n"
-                .data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
         data.append("Content-Type: \(mimetype)\r\n\r\n".data(using: .utf8)!)
         data.append(fileData)
         data.append("\r\n".data(using: .utf8)!)
