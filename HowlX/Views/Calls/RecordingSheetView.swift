@@ -44,20 +44,20 @@ struct RecordingSheetView: View {
                     .padding(.bottom)
                     .padding(.horizontal, 30)
                 
-                VStack (alignment: .leading) {
-                    Text("Nombre")
-                        .fontWeight(.medium)
-                        .foregroundStyle(.text)
-                    
-                    TextField("", text: $vm.name)
-                        .textFieldStyle(.roundedBorder)
-                        .textContentType(.emailAddress)
-                        .textCase(.lowercase)
-                        .autocorrectionDisabled(true)
-                }
-                .padding(.horizontal, 40)
-                .padding(.bottom, 40)
-                .padding(.top, 20)
+//                VStack (alignment: .leading) {
+//                    Text("Nombre")
+//                        .fontWeight(.medium)
+//                        .foregroundStyle(.text)
+//                    
+//                    TextField("", text: $vm.name)
+//                        .textFieldStyle(.roundedBorder)
+//                        .textContentType(.emailAddress)
+//                        .textCase(.lowercase)
+//                        .autocorrectionDisabled(true)
+//                }
+//                .padding(.horizontal, 40)
+//                .padding(.bottom, 40)
+//                .padding(.top, 20)
                 
                 VStack (alignment: .leading) {
                     Text("Cliente")

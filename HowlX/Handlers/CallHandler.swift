@@ -100,8 +100,11 @@ func uploadCallRecording(
     data.append("\(clientId)\r\n".data(using: .utf8)!)
 
     // Add audio file
-    let filename = "recording.m4a"
-    let mimetype = "audio/m4a"
+//    let filename = "recording.m4a"
+//    let mimetype = "audio/m4a"
+    let filename = fileURL.lastPathComponent
+    let mimetype = mimeTypeForFileExtension(fileURL.pathExtension)
+    print(filename, mimetype)
 
     do {
         let fileData = try Data(contentsOf: fileURL)
